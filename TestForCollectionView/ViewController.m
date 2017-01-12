@@ -53,7 +53,7 @@
     [_mainCollectionView addGestureRecognizer:_longPressGesture];
 }
 
-#pragma mark - UICollectionViewDataSource
+#pragma mark - <UICollectionViewDataSource>
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     return 2;
@@ -92,29 +92,6 @@
     return headerView;
 }
 
-#pragma mark - UICollectionViewDelegateFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    CGFloat gap = 10;
-    CGFloat numberOfItem = 6;
-    CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
-    CGSize size = CGSizeMake((screenWidth-gap*(numberOfItem-1-2))/numberOfItem, 40);
-    return size;
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
-{
-    CGSize size = CGSizeMake([UIScreen mainScreen].bounds.size.width, 40);
-    return size;
-}
-
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
-    CGFloat gap = 10;
-    UIEdgeInsets edgeInsets = UIEdgeInsetsMake(gap, gap, gap, gap);
-    return edgeInsets;
-}
-
 - (void)collectionView:(UICollectionView *)collectionView moveItemAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
 {
     NSInteger sourceSection = sourceIndexPath.section;
@@ -146,6 +123,55 @@
         }
     }
     
+}
+
+#pragma mark - <UICollectionViewDelegateFlowLayout>
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat gap = 10;
+    CGFloat numberOfItem = 6;
+    CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
+    CGSize size = CGSizeMake((screenWidth-gap*(numberOfItem-1-2))/numberOfItem, 40);
+    return size;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
+{
+    CGSize size = CGSizeMake([UIScreen mainScreen].bounds.size.width, 40);
+    return size;
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
+{
+    CGFloat gap = 10;
+    UIEdgeInsets edgeInsets = UIEdgeInsetsMake(gap, gap, gap, gap);
+    return edgeInsets;
+}
+
+#pragma mark - <UICollectionViewDelegate>
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0) {
+        [collectionView performBatchUpdates:^{
+            id item = [_arrMyData objectAtIndex:indexPath.row];
+            [_arrMyData removeObject:item];
+            [_arrMoreData addObject:item];
+            NSIndexPath *destinationIndexPath = [NSIndexPath indexPathForRow:_arrMoreData.count-1 inSection:1];
+            [collectionView moveItemAtIndexPath:indexPath toIndexPath:destinationIndexPath];
+        } completion:^(BOOL finished) {
+            
+        }];
+    } else {
+        [collectionView performBatchUpdates:^{
+            id item = [_arrMoreData objectAtIndex:indexPath.row];
+            [_arrMoreData removeObject:item];
+            [_arrMyData addObject:item];
+            NSIndexPath *destinationIndexPath = [NSIndexPath indexPathForRow:_arrMyData.count-1 inSection:0];
+            [collectionView moveItemAtIndexPath:indexPath toIndexPath:destinationIndexPath];
+        } completion:^(BOOL finished) {
+            
+        }];
+    }
 }
 
 #pragma mark - Action
